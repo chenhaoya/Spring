@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           https://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/aop
+                           https://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/context
+                           https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+
+    <bean id="userService" class="com.ch.service.UserServiceImpl"/>
+    <bean id="beforeLog" class="com.ch.log.BeforeLog"/>
+    <bean id="afterLog" class="com.ch.log.AfterLog"/>
+
+    <!--方式一：使用原生的Spring API接口-->
+    <!--配置AOP：导入约束-->
+    <aop:config>
+        <!--切入点  expression：表达式 execution(要执行的位置:[方法访问修饰符] 方法返回值 包名.类名.方法名(方法的参数))-->
+        <aop:pointcut id="pointcut" expression="execution(* com.ch.service.UserServiceImpl.*(..))"/>
+        <!--执行环绕增加-->
+        <!--advice-ref：引用自哪里。pointcut-ref：引入哪个切入点-->
+        <!--afterLog类，切入到pointcut方法上-->
+        <aop:advisor advice-ref="afterLog" pointcut-ref="pointcut"/>
+        <aop:advisor advice-ref="beforeLog" pointcut-ref="pointcut"/>
+    </aop:config>
+
+    <!--方式二：自定义类-->
+<!--    <bean id="diyPointCut" class="com.ch.diy.DiyPointCut"/>
+    <aop:config>
+        &lt;!&ndash;自定义切面，ref：要引用的类&ndash;&gt;
+        <aop:aspect id="aspect" ref="diyPointCut">
+            &lt;!&ndash;切入点&ndash;&gt;
+            <aop:pointcut id="pointcut" expression="execution(* com.ch.service.UserServiceImpl.*(..))"/>
+            &lt;!&ndash;通知&ndash;&gt;
+            <aop:before method="before" pointcut-ref="pointcut"/>
+            <aop:after method="after" pointcut-ref="pointcut"/>
+        </aop:aspect>
+    </aop:config>-->
+
+    <!--方式三；注解-->
+<!--    <bean id="annotation" class="com.ch.annotation.AnnotationPointCut"/>
+    &lt;!&ndash;开启自动代理   JDK（默认）proxy-target-class="false" 、CGLIB proxy-target-class="true"&ndash;&gt;
+    <aop:aspectj-autoproxy proxy-target-class="false"/>
+    &lt;!&ndash;<aop:aspectj-autoproxy/>&ndash;&gt;
+    <bean id="userService2" class="com.ch.annotation.UserServiceImpl"/>-->
+</beans>
